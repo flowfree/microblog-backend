@@ -19,7 +19,7 @@ class RegisterView(generics.CreateAPIView):
         serializer.is_valid(raise_exception=True)
         user = serializer.save()
         refresh = RefreshToken.for_user(user)
-        refresh['email'] = user.email
+        refresh['username'] = user.username
 
         return Response({
             'refresh': str(refresh),
