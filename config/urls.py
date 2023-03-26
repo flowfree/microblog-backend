@@ -16,7 +16,7 @@ Including another URLconf
 import json 
 
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, include
 from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
@@ -24,8 +24,10 @@ from rest_framework_simplejwt.views import (
     TokenObtainPairView,
     TokenRefreshView,
 )
+from rest_framework import routers
 
 from account.views import RegisterView
+from posts.views import PostViewSet
 
 
 @api_view()
@@ -44,11 +46,16 @@ def reverse(request):
         return Response({'message': message[::-1]})
 
 
+router = routers.DefaultRouter(trailing_slash=False)
+router.register('posts', PostViewSet)
+
+
 urlpatterns = [
     path('', home),
     path('reverse', reverse),
     path('auth/token', TokenObtainPairView.as_view()),
     path('auth/token/refresh', TokenRefreshView.as_view()),
     path('account/signup', RegisterView.as_view()),
+    path('', include(router.urls)),
     path('admin/', admin.site.urls),
 ]
