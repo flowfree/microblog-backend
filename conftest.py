@@ -9,6 +9,11 @@ from posts.models import Post
 @pytest.fixture
 def user1():
     user = User.objects.create_user('user1', 'user1@example.com', 'password123')
+    user.profile.name = 'First User'
+    user.profile.bio = 'Full Stack Developer'
+    user.profile.website = 'https://www.example.com'
+    user.profile.save()
+
     refresh = RefreshToken.for_user(user)
     user.access_token = str(refresh.access_token)
 

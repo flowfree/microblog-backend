@@ -52,10 +52,11 @@ router.register('posts', PostViewSet)
 
 urlpatterns = [
     path('', home),
-    path('reverse', reverse),
     path('auth/token', TokenObtainPairView.as_view()),
     path('auth/token/refresh', TokenRefreshView.as_view()),
     path('account/signup', RegisterView.as_view()),
     path('', include(router.urls)),
+    path('account/', include('account.urls')),
     path('admin/', admin.site.urls),
+    path('reverse', reverse),
 ]

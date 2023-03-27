@@ -48,6 +48,8 @@ class User(AbstractUser):
 
 class UserProfile(models.Model):
     name = models.CharField(max_length=125, blank=True, null=True)
+    bio = models.CharField(max_length=250, blank=True, null=True)
+    website = models.URLField(max_length=150, blank=True, null=True)
     user = models.OneToOneField(User, 
                                 related_name='profile', 
                                 on_delete=models.CASCADE)
