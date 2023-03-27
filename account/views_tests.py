@@ -38,3 +38,58 @@ def test_update_profile(client, user1):
     assert user1.profile.name == 'NVIDIA AI'
     assert user1.profile.bio == 'Lorem ipsum dolor sit amet'
     assert user1.profile.website == 'https://www.nvidia.com'
+
+
+class TestChangePassword(object):
+    @pytest.mark.django_db
+    def test_old_password_is_wrong(self, client, user1):
+        data = {
+            'old_password': 'invalid',
+            'password': 'New_P@@swd123',
+            'password2': 'New_P@@swd123',
+        }
+
+        response = client.post(
+            '/account/change_password',
+            data=data,
+            HTTP_AUTHORIZATION=f'Bearer {user1.access_token}'
+        )
+
+        assert response.status_code == 400
+        assert response.json()['old_password'] == ['Wrong password.']
+
+    @pytest.mark.django_db
+    def test_password_confirmation_does_not_match(self, client, user1):
+        data = {
+            'old_password': 'password123',
+            'password': 'New_P@@swd123',
+            'password2': 'aaa',
+        }
+
+        response = client.post(
+            '/account/change_password',
+            data=data,
+            HTTP_AUTHORIZATION=f'Bearer {user1.access_token}'
+        )
+
+        assert response.status_code == 400
+        assert response.json()['password2'] == ['Password confirmation does not match.']
+
+    @pytest.mark.django_db
+    def test_success(self, client, user1):
+        data = {
+            'old_password': 'password123',
+            'password': 'New_P@@swd123',
+            'password2': 'New_P@@swd123',
+        }
+
+        response = client.post(
+            '/account/change_password',
+            data=data,
+            HTTP_AUTHORIZATION=f'Bearer {user1.access_token}'
+        )
+
+        assert response.status_code == 200
+
+        user1.refresh_from_db()
+        assert user1.check_password('New_P@@swd123')

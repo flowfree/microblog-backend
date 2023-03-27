@@ -9,8 +9,8 @@ from rest_framework_simplejwt.views import TokenObtainPairView
 
 from .serializers import (
     RegisterSerializer, 
-    AppTokenObtainPairSerializer,
     UserProfileSerializer,
+    ChangePasswordSerializer,
 )
 
 
@@ -50,3 +50,19 @@ class UserProfileView(APIView):
         request.user.profile.save()
 
         return Response(serializer.validated_data)
+
+
+class ChangePasswordView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, *args, **kwargs):
+        serializer = ChangePasswordSerializer(
+            data=request.data,
+            context={'request': request}
+        )
+        serializer.is_valid(raise_exception=True)
+
+        request.user.set_password(serializer.validated_data['password'])
+        request.user.save()
+
+        return Response()
