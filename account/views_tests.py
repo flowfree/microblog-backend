@@ -44,9 +44,9 @@ class TestChangePassword(object):
     @pytest.mark.django_db
     def test_old_password_is_wrong(self, client, user1):
         data = {
-            'old_password': 'invalid',
-            'password': 'New_P@@swd123',
-            'password2': 'New_P@@swd123',
+            'oldPassword': 'invalid',
+            'newPassword': 'New_P@@swd123',
+            'confirmNewPassword': 'New_P@@swd123',
         }
 
         response = client.post(
@@ -56,14 +56,14 @@ class TestChangePassword(object):
         )
 
         assert response.status_code == 400
-        assert response.json()['old_password'] == ['Wrong password.']
+        assert response.json()['oldPassword'] == ['Wrong password.']
 
     @pytest.mark.django_db
     def test_password_confirmation_does_not_match(self, client, user1):
         data = {
-            'old_password': 'password123',
-            'password': 'New_P@@swd123',
-            'password2': 'aaa',
+            'oldPassword': 'password123',
+            'newPassword': 'New_P@@swd123',
+            'confirmNewPassword': 'aaa',
         }
 
         response = client.post(
@@ -73,14 +73,14 @@ class TestChangePassword(object):
         )
 
         assert response.status_code == 400
-        assert response.json()['password2'] == ['Password confirmation does not match.']
+        assert response.json()['confirmNewPassword'] == ['Password confirmation does not match.']
 
     @pytest.mark.django_db
     def test_success(self, client, user1):
         data = {
-            'old_password': 'password123',
-            'password': 'New_P@@swd123',
-            'password2': 'New_P@@swd123',
+            'oldPassword': 'password123',
+            'newPassword': 'New_P@@swd123',
+            'confirmNewPassword': 'New_P@@swd123',
         }
 
         response = client.post(
